@@ -1,2 +1,18 @@
-# conan-package-guidelines
-Guidelines for create Conan packages
+# Разработка Conan-пакетов. Методические указания.
+
+## Опции пакета
+
+### shared
+### dll_sign
+### with_unit_tests
+### ninja
+
+## Исходники библиотеки (и накладываемые патчи)
+
+## Сборка библиотеки
+
+## Упаковка продуктов
+
+## Интеграция с CMake
+
+## Тест пакета
