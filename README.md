@@ -44,11 +44,39 @@ Dmitriy Vetutnev, ODANT 2020
     enable_testing()
     add_subdirectory(src)
 
-При помощи его выполняется подстройка компилятора (архитектура, тип сборки) и подключение сторонних Conan-библиотек.
+При помощи его выполняется подстройка компилятора (архитектура, тип сборки) и подключение сторонних Conan-библиотек. Рекомендуемый генератор - **Ninja**. Пример метода сборки в **conanfile.py**:
+
+    def build(self):
+        build_type = "RelWithDebInfo" if self.settings.build_type == "Release" else "Debug"
+        gen = "Ninja" if self.options.ninja == True else None
+        cmake = CMake(self, build_type=build_type, generator=gen, msbuild_verbosity='normal')
+        cmake.verbose = True
+        cmake.definitions["LIB_INSTALL"] = "ON"
+        cmake.definitions["LIB_DOC"] = "OFF"
+        if self.options.with_unit_tests:
+            cmake.definitions["LIB_TEST"] = "ON"
+        cmake.configure()
+        cmake.build()
+        if self.options.with_unit_tests:
+            if cmake.is_multi_configuration:
+                self.run("ctest --output-on-failure --build-config %s" % build_type)
+            else:
+                self.run("ctest --output-on-failure")
+        cmake.install()
+        tools.rmdir(os.path.join(self.package_folder, "lib/cmake"))
+        tools.rmdir(os.path.join(self.package_folder, "lib/pkgconfig"))
+
 
 ## Отладка сборки в локальной директории
 
 ## Упаковка продуктов
+
+Большинство библиотек стоит упаковывать запуском инсталяции системы сборки. После инсталяции рекомендуется удалить лишние файлы из пакета (см. пример сборки).
+
+Обязательно упаковываем скрипт интеграции с **CMake**. Без него намного сложней подключать Conan-библиотеки к сторонним проектам (приходится накладывать патчи, он сосуществовании CONAN_PKG::library они не в курсе). Так же не забываем упаковывать PDB-файлы для Visual Studio. Пример метода *package*:
+
+### Ручная упаковка.
+
 
 ## Интеграция с CMake
 
