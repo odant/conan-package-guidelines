@@ -16,13 +16,58 @@ Dmitriy Vetutnev, ODANT 2020
 
 Исходники библиотеки располагаются в директории *src* корня проекта. Рекомендуется выкачивать их одним коммитом:
 
-    git subtree add -P src https://github.com/library/lib.git version --squash
+    git subtree add -P src https://github.com/library/lib.git v1.2.3 --squash
 
-Про косяк гита при обновлении исходников.
+*v1.2.3* - это тег коммита. Вместо него так же можно указывать и ID коммита.
 
-    git subtree pull
+Обновление исходников библиотеки осуществляется такой командой:
 
-Оригинальные исходники не рекомендуются менять. Свои изменения стоит вносить патчами (в будующем оно упрощает обновление версии). Не забываем добавлять файл патча в список экспорта. Для формирования патча удобно без выполнения фиксации редактировать исходники прямо в папке *src* и сразу видеть как собирается пакет. Формирование итогового патча выполняется командой ```git diff```
+    git subtree pull -P src https://github.com/library/lib.git v2.3.4 --squash
+
+В современных (на 2020 год) версиях Git команда *git subtree pull* почему-то падает приблизительно с такой ошибкой:
+
+    $ git subtree pull -P src https://github.com/nodejs/node.git v12.18.3 --squash
+    From https://github.com/nodejs/node
+     * tag                       v12.18.3   -> FETCH_HEAD
+    fatal: ambiguous argument '3e896191a4d9078f0412bc03cdf80761ff2636ef^0': unknown revision or path not in the working tree.
+    Use '--' to separate paths from revisions, like this:
+    'git <command> [<revision>...] -- [<file>...]'
+    could not rev-parse split hash 3e896191a4d9078f0412bc03cdf80761ff2636ef from commit c8d6993ca60986e18ebe1004587621bbc02265b9
+    Can't squash-merge: 'src' was never added.
+
+Эта бага обходится следующим способом. Добавляем к локальному репозиторию URL репозитория библиотеки и загружаем (но не применяем) историю в недра Git.
+
+    $ git remote add src_upstream https://github.com/nodejs/node.git
+    $ git fetch src_upstream
+    remote: Enumerating objects: 9877, done.
+    remote: Counting objects: 100% (9877/9877), done.
+    remote: Total 19666 (delta 9876), reused 9877 (delta 9876), pack-reused 9789
+    Receiving objects: 100% (19666/19666), 25.06 MiB | 4.89 MiB/s, done.
+    Resolving deltas: 100% (15250/15250), completed with 4142 local objects.
+    From https://github.com/nodejs/node
+     * [new branch]              archived-io.js-v0.10 -> src_upstream/archived-io.js-v0.10
+     * [new branch]              archived-io.js-v0.12 -> src_upstream/archived-io.js-v0.12
+     * [new branch]              canary-base          -> src_upstream/canary-base
+     * [new branch]              initial-quic-part-1  -> src_upstream/initial-quic-part-1
+     * [new branch]              initial-quic-part-2  -> src_upstream/initial-quic-part-2
+     * [new branch]              initial-quic-part-3  -> src_upstream/initial-quic-part-3
+     * [new branch]              v11.x                -> src_upstream/v11.x
+     * [new branch]              v12.x                -> src_upstream/v12.x
+     * [new branch]              v12.x-staging        -> src_upstream/v12.x-staging
+     * [new branch]              v13.x                -> src_upstream/v13.x
+     * [new branch]              v13.x-staging        -> src_upstream/v13.x-staging
+     * [new branch]              v14.6.0-proposal     -> src_upstream/v14.6.0-proposal
+     * [new branch]              v14.x                -> src_upstream/v14.x
+     * [new branch]              v14.x-staging        -> src_upstream/v14.x-staging
+     * [new tag]                 v10.22.0             -> v10.22.0
+     * [new tag]                 v12.18.2             -> v12.18.2
+     * [new tag]                 v12.18.3             -> v12.18.3
+     * [new tag]                 v14.6.0              -> v14.6.0
+     * [new tag]                 v14.5.0              -> v14.5.0
+
+После этого команда *git subtree pull* выполняется без ошибок.
+
+Оригинальные исходники не рекомендуются вносить изменения (после этого команда *git subtree pull* перестает работать). Свои изменения стоит вносить патчами (в будующем оно упрощает обновление версии). Не забываем добавлять файл патча в список экспорта. Для формирования патча удобно без выполнения фиксации редактировать исходники прямо в папке *src* и сразу видеть как собирается пакет. Формирование итогового патча выполняется командой ```git diff```
 
 В файле **conanfile.py** накладывание исходников выглядит так:
 
