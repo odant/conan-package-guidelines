@@ -91,6 +91,10 @@ Dmitriy Vetutnev, ODANT 2020
 
 При помощи его выполняется подстройка компилятора (архитектура, тип сборки) и подключение сторонних Conan-библиотек. Рекомендуемый генератор - **Ninja**. Пример метода сборки в **conanfile.py**:
 
+    def build_requiments(self):
+        if self.options.ninja:
+            self.build_requires("ninja/1.9.0")
+
     def build(self):
         build_type = "RelWithDebInfo" if self.settings.build_type == "Release" else "Debug"
         gen = "Ninja" if self.options.ninja == True else None
