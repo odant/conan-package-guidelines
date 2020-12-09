@@ -177,8 +177,6 @@ Dmitriy Vetutnev, ODANT 2020
         tools.rmdir(os.path.join(self.package_folder, "lib/pkgconfig"))
 
 
-## Отладка сборки в локальной директории
-
 ## Встроенные unit-тесты библиотеки.
 
 ## Упаковка продуктов
@@ -192,6 +190,8 @@ Dmitriy Vetutnev, ODANT 2020
 ### Подпись упакованых артефактов (Windows-only)
 
 Про метод package и модуль windows_signtool
+
+## Отладка сборки в локальной директории
 
 ## Интеграция с CMake
 
