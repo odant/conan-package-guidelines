@@ -191,9 +191,12 @@ Dmitriy Vetutnev, ODANT 2020
 
 ### Ручная упаковка.
 
-Выполняется в методе package()
+Выполняется в методе package(), пример:
 
-Упаковка conanfile.py, PDB, cmake-скрипт
+    def package(self):
+        self.copy("FindLibrary.cmake", src=".", dst=".")
+        if self.settings.os == "Windows":
+            self.copy("liblibrary.pdb", src=self.build_folder, dst="bin", keep_path=False)
 
 
 ### Подпись упакованых артефактов (Windows-only)
