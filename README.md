@@ -203,7 +203,29 @@ Dmitriy Vetutnev, ODANT 2020
 
 Про метод package и модуль windows_signtool
 
+
 ## Отладка сборки в локальной директории
+
+Сначала выполняется подготовка информации для сборки проекта. Выполнение методов **build_requirements** и **build_requirements** рецепта. Целевая директория *local*. Параметры сборки и опции пакета передаются также как в команде **conan create**
+
+    conan install . odant/testing -if local -o openssl:with_unit_tests=True
+
+Экспортирование исходников и накладывание патчей (метод **source**). Для упрощения в ту же директорию.
+
+    conan source . -sf local
+
+Запуск сборки (метод **build**)
+
+    conan build . -bf local
+
+
+Упаковка продуктов (метод **package**). *local/p* - директория, куда помещаются собраные артефакты пакета.
+
+    conan package . -bf local -pf local/p
+
+
+editable mode
+
 
 ## Интеграция с CMake
 
