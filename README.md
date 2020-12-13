@@ -219,12 +219,24 @@ Dmitriy Vetutnev, ODANT 2020
     conan build . -bf local
 
 
-Упаковка продуктов (метод **package**). *local/p* - директория, куда помещаются собраные артефакты пакета.
+Упаковка артефактов (метод **package**). *local/p* - директория, куда помещаются собраные артефакты пакета.
 
     conan package . -bf local -pf local/p
 
 
-editable mode
+На полученую директорию можно вставить ссылку в кэше Conan и использовать полученый пакет. Добавляем копирование рецепта (Conan сам почему то его не вкладывает в пакет):
+
+    def package(self):
+        if not self.in_local_cache:
+            self.copy("conanfile.py", dst=".", keep_path=False)
+
+
+Добавляем пакет в **editable mode**:
+
+    conan editable add local/p library/1.2.3+0@odant/edit
+
+
+После этого можно использовать пакет в проектах. После изменения пакета нужно выполнить сборку и упаковку пакета (что может быть заметно быстрей полной пересборки пакета) командами **conan build / conan package**
 
 
 ## Интеграция с CMake
