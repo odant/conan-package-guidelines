@@ -155,12 +155,10 @@ Dmitriy Vetutnev, ODANT 2020, 2021
 
     def build_requirements(self):
         if self.options.ninja:
-            self.build_requires("ninja/1.9.0")
+            self.build_requires("ninja/[>=1.9.0]")
 
     def build(self):
-        build_type = "RelWithDebInfo" if self.settings.build_type == "Release" else "Debug"
-        gen = "Ninja" if self.options.ninja == True else None
-        cmake = CMake(self, build_type=build_type, generator=gen, msbuild_verbosity='normal')
+        cmake = CMake(self, msbuild_verbosity='normal')
         cmake.verbose = True
         cmake.definitions["LIB_INSTALL"] = "ON"
         cmake.definitions["LIB_DOC"] = "OFF"
@@ -264,7 +262,7 @@ Dmitriy Vetutnev, ODANT 2020, 2021
     class PackageTestConan(ConanFile):
         settings = "os", "compiler", "build_type", "arch"
         generators = "cmake"
-        build_requires = "ninja/1.9.0"
+        build_requires = "ninja/[>=1.9.0]"
     
         def imports(self):
             self.copy("*.pdb", dst="bin", src="bin")
@@ -272,11 +270,11 @@ Dmitriy Vetutnev, ODANT 2020, 2021
             self.copy("*.so*", dst="bin", src="lib")
 
         def build(self):
-            cmake = CMake(self, generator="Ninja", msbuild_verbosity='normal')
+            cmake = CMake(self, msbuild_verbosity='normal')
             cmake.verbose = True
             cmake.configure()
-        cmake.build()
-        self.cmake_is_multi_configuration = cmake.is_multi_configuration
+            cmake.build()
+            self.cmake_is_multi_configuration = cmake.is_multi_configuration
     
         def test(self):
             if self.cmake_is_multi_configuration:
